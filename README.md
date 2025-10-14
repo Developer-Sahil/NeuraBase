@@ -229,4 +229,4 @@ For issues and questions, please open an issue on GitHub.
 
 ---
 
-**Built with ❤️ by Kingfando** • Powered by Flask, ChromaDB & Gemini AI
+**Built by Sahil Sharma** • Powered by Flask, ChromaDB & Gemini AI
