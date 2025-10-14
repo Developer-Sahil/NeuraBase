@@ -1,0 +1,9 @@
+# Ignore environment variables file
+.env
+
+# Ignore Python cache (if it's a Python project)
+__pycache__/
+*.pyc
+
+# Ignore VSCode workspace settings
+.vscode/

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuraBase - AI Knowledge Search</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(ellipse at top left, #1a0033, #000010 70%);
+      color: #e4e4e4;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Animated starry background */
+    @keyframes move-stars {
+      from { transform: translateY(0px); }
+      to { transform: translateY(-2000px); }
+    }
+
+    .stars, .stars-2, .stars-3 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2000px;
+      animation: move-stars linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .stars {
+      background-image: radial-gradient(1px 1px at 25px 5px, white, transparent),
+        radial-gradient(1px 1px at 50px 25px, white, transparent),
+        radial-gradient(1px 1px at 125px 20px, white, transparent),
+        radial-gradient(1px 1px at 170px 55px, white, transparent),
+        radial-gradient(1px 1px at 200px 95px, white, transparent),
+        radial-gradient(1px 1px at 350px 75px, white, transparent),
+        radial-gradient(1px 1px at 500px 150px, white, transparent),
+        radial-gradient(1px 1px at 730px 120px, white, transparent);
+      background-size: 500px 200px;
+      animation-duration: 50s;
+      opacity: 0.5;
+    }
+
+    .stars-2 {
+      background-image: radial-gradient(2px 2px at 10px 80px, white, transparent),
+        radial-gradient(2px 2px at 200px 150px, white, transparent),
+        radial-gradient(2px 2px at 450px 10px, white, transparent),
+        radial-gradient(2px 2px at 750px 90px, white, transparent);
+      background-size: 400px 200px;
+      animation-duration: 100s;
+      opacity: 0.3;
+    }
+
+    .stars-3 {
+      background-image: radial-gradient(3px 3px at 250px 50px, white, transparent),
+        radial-gradient(3px 3px at 700px 100px, white, transparent);
+      background-size: 500px 200px;
+      animation-duration: 150s;
+      opacity: 0.2;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 20px 40px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa 0%, #ec4899 50%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: #9ca3af;
+      font-size: 1.1rem;
+      font-weight: 300;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    @media (min-width: 768px) {
+      .main-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 32px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card:hover {
+      border-color: rgba(167, 139, 250, 0.3);
+      box-shadow: 0 8px 40px rgba(167, 139, 250, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #a78bfa, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+
+    .file-upload-area {
+      border: 2px dashed rgba(167, 139, 250, 0.3);
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .file-upload-area:hover {
+      border-color: rgba(167, 139, 250, 0.6);
+      background: rgba(167, 139, 250, 0.05);
+    }
+
+    .file-upload-area.dragover {
+      border-color: #a78bfa;
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.7;
+    }
+
+    .upload-text {
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+
+    .upload-hint {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-list {
+      margin-top: 16px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .file-item-icon {
+      font-size: 18px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      color: #e4e4e4;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      resize: vertical;
+      transition: all 0.3s ease;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #a78bfa;
+      box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+    }
+
+    .input-group {
+      margin-top: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    label {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      white-space: nowrap;
+    }
+
+    input[type="number"] {
+      width: 80px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 10px;
+      color: #e4e4e4;
+      font-size: 1rem;
+    }
+
+    button {
+      background: linear-gradient(135deg, #a78bfa, #ec4899);
+      border: none;
+      color: white;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
+      width: 100%;
+      margin-top: 16px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .answer-section {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .answer-label {
+      font-size: 0.9rem;
+      color: #a78bfa;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .answer-box {
+      background: rgba(167, 139, 250, 0.05);
+      border-left: 4px solid #a78bfa;
+      border-radius: 8px;
+      padding: 20px;
+      color: #e4e4e4;
+      line-height: 1.7;
+      min-height: 100px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(167, 139, 250, 0.3);
+      border-top-color: #a78bfa;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .sources {
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+
+    .source-item {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 8px;
+      border-left: 2px solid rgba(167, 139, 250, 0.5);
+    }
+
+    .status-message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-top: 16px;
+      font-size: 0.9rem;
+    }
+
+    .status-success {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #4ade80;
+    }
+
+    .status-error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+      font-size: 0.9rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    footer a {
+      color: #a78bfa;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+      color: #c4b5fd;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(167, 139, 250, 0.3);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(167, 139, 250, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="stars-2"></div>
+  <div class="stars-3"></div>
+
+  <div class="container">
+    <header>
+      <h1>NeuraBase</h1>
+      <p class="subtitle">AI-Powered Knowledge Search Engine</p>
+    </header>
+
+    <div class="main-grid">
+      <!-- Upload Section -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📁</div>
+          <h2>Upload Documents</h2>
+        </div>
+        
+        <div class="file-upload-area" id="dropZone" onclick="document.getElementById('files').click()">
+          <div class="upload-icon">☁️</div>
+          <div class="upload-text">Click to upload or drag and drop</div>
+          <div class="upload-hint">PDF, TXT, DOCX, CSV, JSON (Max 16MB)</div>
+        </div>
+        
+        <input type="file" id="files" multiple accept=".pdf,.txt,.docx,.csv,.json">
+        
+        <div id="fileList" class="file-list"></div>
+        
+        <button id="uploadBtn" onclick="uploadFiles()" disabled>
+          <span id="uploadBtnText">Upload & Process</span>
+        </button>
+        
+        <div id="uploadStatus"></div>
+      </div>
+
+      <!-- Query Section -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">💬</div>
+          <h2>Ask Questions</h2>
+        </div>
+        
+        <textarea 
+          id="query" 
+          placeholder="Ask anything about your uploaded documents..."
+          onkeydown="if(event.key==='Enter'&&event.ctrlKey)askQuestion()"
+        ></textarea>
+        
+        <div class="input-group">
+          <label for="top_k">Results:</label>
+          <input type="number" id="top_k" value="3" min="1" max="10">
+        </div>
+
+        <button onclick="askQuestion()">
+          <span id="askBtnText">🔍 Search Knowledge Base</span>
+        </button>
+      </div>
+
+      <!-- Answer Section -->
+      <div class="card full-width">
+        <div class="card-header">
+          <div class="card-icon">✨</div>
+          <h2>AI Response</h2>
+        </div>
+        
+        <div class="answer-section">
+          <span class="answer-label">Answer:</span>
+          <div id="answer" class="answer-box">Your AI-generated answer will appear here...</div>
+          
+          <div id="sources"></div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>⚡ NeuraBase &copy; 2025 • Powered by Flask, ChromaDB & Gemini AI</p>
+      <p style="margin-top: 8px; font-size: 0.8rem;">Built by Sahil Sharma for intelligent document search</p>
+    </footer>
+  </div>
+
+  <script>
+    let selectedFiles = [];
+
+    // File input handler
+    document.getElementById('files').addEventListener('change', function(e) {
+      selectedFiles = Array.from(e.target.files);
+      displayFileList();
+      document.getElementById('uploadBtn').disabled = selectedFiles.length === 0;
+    });
+
+    // Drag and drop handlers
+    const dropZone = document.getElementById('dropZone');
+    
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const files = Array.from(e.dataTransfer.files);
+      selectedFiles = files;
+      displayFileList();
+      document.getElementById('uploadBtn').disabled = selectedFiles.length === 0;
+    });
+
+    function displayFileList() {
+      const fileListDiv = document.getElementById('fileList');
+      if (selectedFiles.length === 0) {
+        fileListDiv.innerHTML = '';
+        return;
+      }
+
+      const fileIcons = {
+        'pdf': '📄',
+        'txt': '📝',
+        'docx': '📘',
+        'csv': '📊',
+        'json': '🔧'
+      };
+
+      fileListDiv.innerHTML = selectedFiles.map(file => {
+        const ext = file.name.split('.').pop().toLowerCase();
+        const icon = fileIcons[ext] || '📎';
+        return `
+          <div class="file-item">
+            <span class="file-item-icon">${icon}</span>
+            <span>${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function uploadFiles() {
+      if (selectedFiles.length === 0) return;
+
+      const uploadBtn = document.getElementById('uploadBtn');
+      const uploadBtnText = document.getElementById('uploadBtnText');
+      const uploadStatus = document.getElementById('uploadStatus');
+      
+      uploadBtn.disabled = true;
+      uploadBtnText.innerHTML = '<span class="loading"></span> Processing...';
+      uploadStatus.innerHTML = '';
+
+      const formData = new FormData();
+      selectedFiles.forEach(file => formData.append('files', file));
+
+      try {
+        const res = await fetch('/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data.success && data.success.length > 0) {
+          uploadStatus.innerHTML = `
+            <div class="status-message status-success">
+              ✓ Successfully uploaded ${data.total_uploaded} file(s)!
+            </div>
+          `;
+          selectedFiles = [];
+          displayFileList();
+          document.getElementById('files').value = '';
+        }
+
+        if (data.errors && data.errors.length > 0) {
+          const errorMsg = data.errors.map(e => `${e.filename}: ${e.message}`).join('<br>');
+          uploadStatus.innerHTML += `
+            <div class="status-message status-error">
+              ⚠ Errors: <br>${errorMsg}
+            </div>
+          `;
+        }
+      } catch (err) {
+        uploadStatus.innerHTML = `
+          <div class="status-message status-error">
+            ❌ Upload failed: ${err.message}
+          </div>
+        `;
+      } finally {
+        uploadBtn.disabled = selectedFiles.length === 0;
+        uploadBtnText.textContent = 'Upload & Process';
+      }
+    }
+
+    async function askQuestion() {
+      const query = document.getElementById('query').value.trim();
+      const top_k = parseInt(document.getElementById('top_k').value);
+      const answerDiv = document.getElementById('answer');
+      const sourcesDiv = document.getElementById('sources');
+      const askBtnText = document.getElementById('askBtnText');
+
+      if (!query) {
+        answerDiv.textContent = 'Please enter a question.';
+        return;
+      }
+
+      askBtnText.innerHTML = '<span class="loading"></span> Searching...';
+      answerDiv.innerHTML = '<span class="loading"></span> AI is thinking...';
+      sourcesDiv.innerHTML = '';
+
+      try {
+        const res = await fetch('/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, top_k })
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+          answerDiv.textContent = '⚠️ ' + data.error;
+        } else {
+          answerDiv.textContent = data.answer;
+
+          if (data.sources && data.sources.length > 0) {
+            sourcesDiv.innerHTML = `
+              <div class="sources">
+                <strong>📚 Sources (${data.num_sources} relevant chunks found):</strong>
+                ${data.sources.map((source, i) => `
+                  <div class="source-item">
+                    <strong>Source ${i + 1}:</strong> ${source.substring(0, 200)}...
+                  </div>
+                `).join('')}
+              </div>
+            `;
+          }
+        }
+      } catch (err) {
+        answerDiv.textContent = '❌ Error: ' + err.message;
+      } finally {
+        askBtnText.innerHTML = '🔍 Search Knowledge Base';
+      }
+    }
+
+    // Keyboard shortcut hint
+    document.getElementById('query').addEventListener('focus', function() {
+      this.placeholder = 'Ask anything... (Ctrl+Enter to search)';
+    });
+
+    document.getElementById('query').addEventListener('blur', function() {
+      if (!this.value) {
+        this.placeholder = 'Ask anything about your uploaded documents...';
+      }
+    });
+  </script>
+</body>
+</html>
