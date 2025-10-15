@@ -1,232 +1,255 @@
-# 🧠 NeuraBase - AI-Powered Knowledge Search Engine
+# 🧠 NeuraBase — AI-Powered Knowledge Search Engine
 
-A powerful Retrieval-Augmented Generation (RAG) system that allows you to upload documents and query them using natural language with AI-powered responses.
+**NeuraBase** is a Retrieval-Augmented Generation (RAG) system that lets you upload your documents and ask questions in natural language. The system retrieves relevant content and generates AI-powered answers — fast, intuitive, and intelligent.
 
-![NeuraBase](https://img.shields.io/badge/Status-Active-success)
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
-![Flask](https://img.shields.io/badge/Flask-3.0-green)
+---
 
 ## ✨ Features
 
-- 📁 **Multi-format Support**: Upload PDF, TXT, DOCX, CSV, and JSON files
-- 🔍 **Semantic Search**: Uses sentence-transformers for intelligent document retrieval
-- 💾 **Persistent Storage**: ChromaDB vector database for efficient storage and retrieval
-- 🤖 **AI Responses**: Powered by Google's Gemini API for intelligent answers
-- 🎨 **Modern UI**: Beautiful, responsive interface with animated starry background
-- ⚡ **Fast Processing**: Efficient chunking and embedding generation
-- 🔄 **Drag & Drop**: Intuitive file upload with drag-and-drop support
+* 📁 **Multi-format Uploads:** Supports PDF, TXT, DOCX, CSV, and JSON
+* 🔍 **Semantic Search:** Uses sentence-transformers for intelligent retrieval
+* 💾 **Persistent Storage:** Built on ChromaDB for efficient vector storage
+* 🤖 **AI Responses:** Powered by Google’s Gemini API
+* 🎨 **Modern UI:** Clean, responsive interface with a dynamic starry background
+* ⚡ **Fast Processing:** Optimized text chunking and embedding
+* 🔄 **Drag & Drop:** Simple, intuitive file upload experience
+
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- Google Gemini API key ([Get one here](https://makersuite.google.com/app/apikey))
+* Python 3.8 or higher
+* Google Gemini API key ([Get one here](https://aistudio.google.com/app/apikey))
 
 ### Installation
 
-1. **Clone the repository**
 ```bash
+# Clone the repository
 git clone <your-repo-url>
 cd NeuraBase
-```
 
-2. **Create virtual environment**
-```bash
+# Create a virtual environment
 python -m venv .venv
 
-# On Windows
+# Activate the environment
+# Windows
 .venv\Scripts\activate
-
-# On macOS/Linux
+# macOS/Linux
 source .venv/bin/activate
-```
 
-3. **Install dependencies**
-```bash
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-4. **Set up environment variables**
+### Set Up Environment Variables
 
 Create a `.env` file in the project root:
-```env
+
+```bash
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-5. **Run the application**
+### Run the Application
+
 ```bash
 python app.py
 ```
 
-6. **Open your browser**
-```
-http://localhost:5000
-```
+Then open your browser and visit:
+👉 [http://localhost:5000](http://localhost:5000)
+
+---
 
 ## 📁 Project Structure
 
 ```
 NeuraBase/
-├── app.py              # Flask application and routes
-├── utils.py            # Document processing and vector DB utilities
-├── llm.py             # LLM integration (Gemini API)
-├── index.html         # Frontend UI
-├── requirements.txt   # Python dependencies
-├── .env              # Environment variables (create this)
-├── uploads/          # Uploaded files (auto-created)
-└── chroma_store/     # Vector database (auto-created)
+├── app.py              # Main Flask app and routes
+├── utils.py            # Document processing and database utilities
+├── llm.py              # LLM (Gemini API) integration
+├── index.html          # Frontend UI
+├── requirements.txt    # Dependencies
+├── .env                # Environment variables
+├── uploads/            # Uploaded files (auto-created)
+└── chroma_store/       # Vector database (auto-created)
 ```
 
-## 🔧 How It Works
+---
 
-1. **Document Upload**: Files are uploaded and parsed based on their format
-2. **Text Extraction**: Content is extracted using format-specific parsers
-3. **Chunking**: Text is split into manageable chunks (500 chars with 50 char overlap)
-4. **Embedding**: Each chunk is converted to a vector using `all-MiniLM-L6-v2` model
-5. **Storage**: Embeddings are stored in ChromaDB for fast retrieval
-6. **Query**: User questions are embedded and matched against stored chunks
-7. **Response**: Relevant context is sent to Gemini AI for answer generation
+## ⚙️ How It Works
+
+1. **Upload Documents** — Drop or select your files
+2. **Extract Text** — Automatically reads and parses the content
+3. **Chunk Content** — Splits text into smaller, meaningful sections
+4. **Generate Embeddings** — Creates vector representations using `all-MiniLM-L6-v2`
+5. **Store in ChromaDB** — Embeddings are indexed for quick retrieval
+6. **Query with AI** — Your question is matched, and Gemini AI generates a response
+
+---
 
 ## 🎯 Usage
 
 ### Uploading Documents
 
-1. Click the upload area or drag files directly
-2. Select one or multiple files (PDF, TXT, DOCX, CSV, JSON)
-3. Click "Upload & Process" to ingest into the knowledge base
+* Drag and drop or click to select files
+* Supports multiple files and formats (PDF, TXT, DOCX, CSV, JSON)
+* Click **Upload & Process** to build your knowledge base
 
 ### Asking Questions
 
-1. Type your question in the query box
-2. Adjust the number of results to retrieve (1-10)
-3. Click "Search Knowledge Base" or press Ctrl+Enter
-4. View AI-generated answer with source references
+* Type your question in the input box
+* Adjust results (1–10) for better precision
+* Press **Ctrl + Enter** or click **Search Knowledge Base**
+* Get an AI-generated answer with source references
 
-## 🔑 Key Features Explained
+---
 
-### Vector Database (ChromaDB)
-- Persistent storage of document embeddings
-- Fast similarity search for relevant content
-- Automatic collection management
+## 🧩 Key Components
 
-### Sentence Transformers
-- `all-MiniLM-L6-v2` model for embeddings
-- Efficient semantic understanding
-- 384-dimensional vectors
+### **Vector Database (ChromaDB)**
 
-### Gemini AI Integration
-- Contextual answer generation
-- Natural language understanding
-- Concise and accurate responses
+* Stores embeddings for fast semantic search
+* Automatically manages collections and persistence
 
-## 🐛 Debugging Changes Made
+### **Sentence Transformers**
 
-### Fixed Issues:
+* Model: `all-MiniLM-L6-v2`
+* Produces compact 384-dimensional embeddings
 
-1. **Route Mismatch**: Changed `/ask` to `/query` to match frontend
-2. **File Handling**: Fixed multiple file upload (changed from `file` to `files`)
-3. **Template Path**: Using `send_from_directory` instead of `render_template`
-4. **Integration**: Connected ChromaDB utilities to Flask routes
-5. **Error Handling**: Added comprehensive try-catch blocks
-6. **File Type Support**: Extended parsing for DOCX, CSV, JSON
-7. **Dependencies**: Updated requirements.txt with all needed packages
+### **Gemini AI**
 
-### UI/UX Improvements:
+* Understands natural queries
+* Generates clear, concise responses with context
 
-1. **Modern Design**: Gradient backgrounds, glassmorphism effects
-2. **Drag & Drop**: Intuitive file upload interface
-3. **Loading States**: Visual feedback during operations
-4. **Error Messages**: Clear, user-friendly error displays
-5. **Responsive Layout**: Works on mobile and desktop
-6. **Source Citations**: Shows relevant document chunks
-7. **Keyboard Shortcuts**: Ctrl+Enter to submit query
-8. **File Preview**: Display uploaded files with icons
+---
+
+## 🐛 Recent Fixes & Improvements
+
+### **Backend Fixes**
+
+* Updated routes (`/ask` → `/query`)
+* Fixed multi-file uploads
+* Integrated ChromaDB utilities with Flask routes
+* Enhanced error handling and file validation
+
+### **UI/UX Enhancements**
+
+* Gradient backgrounds with glassmorphism design
+* Drag & drop upload area
+* Visual loading indicators
+* Source citations for transparency
+* Keyboard shortcuts (`Ctrl + Enter`)
+* File preview with icons
+* Fully responsive design
+
+---
 
 ## 📊 API Endpoints
 
-### POST `/upload`
+### **POST /upload**
+
 Upload and process documents
+**Request:** `FormData` with `files[]`
+**Response:**
+
 ```json
-Request: FormData with 'files' array
-Response: {
-  "success": [...],
-  "errors": [...],
+{
+  "success": ["file1.pdf", "file2.txt"],
+  "errors": [],
   "total_uploaded": 2
 }
 ```
 
-### POST `/query`
+### **POST /query**
+
 Query the knowledge base
+**Request:**
+
 ```json
-Request: {
-  "query": "What is...",
+{
+  "query": "What is machine learning?",
   "top_k": 3
 }
-Response: {
-  "answer": "...",
-  "sources": [...],
+```
+
+**Response:**
+
+```json
+{
+  "answer": "Machine learning is ...",
+  "sources": ["file1.pdf", "file2.txt"],
   "num_sources": 3
 }
 ```
 
-### GET `/health`
-Health check endpoint
+### **GET /health**
+
+Check service status
+**Response:**
+
 ```json
-Response: {
+{
   "status": "healthy",
   "service": "NeuraBase RAG Engine"
 }
 ```
 
-## ⚙️ Configuration
+---
 
-### Chunk Settings (in utils.py)
-```python
-chunk_size = 500      # Characters per chunk
-overlap = 50          # Overlap between chunks
-```
+## 🔧 Configuration
 
-### Model Settings (in utils.py)
-```python
-embedding_model = "all-MiniLM-L6-v2"  # Sentence transformer model
-```
-
-### Upload Limits (in app.py)
-```python
-MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
-```
-
-## 🔒 Security Considerations
-
-- File type validation before processing
-- Secure filename handling with `werkzeug.secure_filename`
-- Environment variables for API keys
-- Input sanitization for queries
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License.
-
-## 🙏 Acknowledgments
-
-- [ChromaDB](https://www.trychroma.com/) - Vector database
-- [Sentence Transformers](https://www.sbert.net/) - Embedding models
-- [Google Gemini](https://deepmind.google/technologies/gemini/) - LLM API
-- [Flask](https://flask.palletsprojects.com/) - Web framework
-
-## 📧 Support
-
-For issues and questions, please open an issue on GitHub.
+| Setting                                 | File     | Description            |
+| --------------------------------------- | -------- | ---------------------- |
+| `chunk_size = 500`                      | utils.py | Characters per chunk   |
+| `overlap = 50`                          | utils.py | Overlap between chunks |
+| `embedding_model = "all-MiniLM-L6-v2"`  | utils.py | Embedding model        |
+| `MAX_CONTENT_LENGTH = 16 * 1024 * 1024` | app.py   | Max upload size (16MB) |
 
 ---
 
-**Built by Sahil Sharma** • Powered by Flask, ChromaDB & Gemini AI
+## 🔒 Security Notes
+
+* Validates file types before processing
+* Uses `secure_filename` for safe uploads
+* API keys stored in `.env` (never committed)
+* Sanitized query handling to prevent injection
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repo
+2. Create your feature branch
+
+   ```bash
+   git checkout -b feature/AmazingFeature
+   ```
+3. Commit your changes
+
+   ```bash
+   git commit -m "Add AmazingFeature"
+   ```
+4. Push and open a Pull Request
+
+---
+
+## 📝 License
+
+Licensed under the **MIT License**.
+
+---
+
+## 🙏 Acknowledgments
+
+* [ChromaDB](https://www.trychroma.com/) — Vector Database
+* [Sentence Transformers](https://www.sbert.net/) — Embedding Models
+* [Google Gemini](https://aistudio.google.com/) — AI Model
+* [Flask](https://flask.palletsprojects.com/) — Web Framework
+
+---
+
+### 💡 Built by **Sahil Sharma**
+
+Powered by **Flask**, **ChromaDB**, and **Gemini AI**.

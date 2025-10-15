@@ -1,5 +1,5 @@
 import os
-import fitz  # PyMuPDF for PDF parsing
+import fitz
 import chromadb
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
@@ -7,14 +7,11 @@ from docx import Document
 import csv
 import json
 
-# Initialize Chroma client
 CHROMA_DIR = "chroma_store"
 os.makedirs(CHROMA_DIR, exist_ok=True)
 
 chroma_client = chromadb.PersistentClient(path=CHROMA_DIR)
 collection = chroma_client.get_or_create_collection(name="documents")
-
-# Initialize embedding model
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
 
@@ -61,7 +58,6 @@ def parse_csv(file_path):
             rows = list(reader)
             if not rows:
                 raise ValueError("CSV file is empty.")
-            # Format as readable text
             text = "\n".join([" | ".join(row) for row in rows])
             return text
     except Exception as e:
@@ -113,17 +109,13 @@ def ingest_document(file_path):
     if not chunks:
         raise ValueError("No valid text chunks created from document.")
 
-    # Generate embeddings
     embeddings = embedding_model.encode(chunks).tolist()
 
     # Create unique IDs for each chunk
     base_name = os.path.basename(file_path)
     ids = [f"{base_name}_chunk_{i}" for i in range(len(chunks))]
     
-    # Add metadata
     metadatas = [{"source": base_name, "chunk_id": i} for i in range(len(chunks))]
-
-    # Store in ChromaDB
     collection.add(
         documents=chunks,
         embeddings=embeddings,
